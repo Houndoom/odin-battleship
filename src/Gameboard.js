@@ -10,6 +10,8 @@ const Gameboard = (len) => {
     _board[i] = new Array(len)
   }
 
+  const getLength = () => len;
+  
   const placeShip = (x, y, shipLen, dir) => {
     if (dir === 'h') {
       if (x <= len - shipLen) {
@@ -56,5 +58,5 @@ const Gameboard = (len) => {
     return _ships.reduce((a, b) => a && b.isSunk(), true);
   }
 
-  return { placeShip, receiveAttack, allSunk };
+  return { placeShip, receiveAttack, allSunk, getLength };
 }
