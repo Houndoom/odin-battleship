@@ -12,6 +12,26 @@ const Gameboard = (len) => {
 
   const getLength = () => len;
   
+  const placeShipRandom = function(shipLen) {
+    let x;
+    let y;
+    const directions = ['h', 'v'];
+    let dir;
+    let placed = false;
+
+    while(placed === false) {
+      dir = directions[Math.floor(Math.random() * 2)];
+      if (dir === 'h') {
+        x = Math.floor(Math.random() * (len - shipLen));
+        y = Math.floor(Math.random() * len);
+      } else {
+        x = Math.floor(Math.random() * len);
+        y = Math.floor(Math.random() * (len - shipLen));
+      }
+      placed = placeShip(x, y, shipLen, dir);
+    }
+  }
+
   const placeShip = function(x, y, shipLen, dir) {
     if (dir === 'h') {
       if (x <= len - shipLen) {
@@ -57,5 +77,5 @@ const Gameboard = (len) => {
     return _ships.reduce((a, b) => a && b.isSunk(), true);
   }
 
-  return { placeShip, receiveAttack, allSunk, getLength };
+  return { placeShip, receiveAttack, allSunk, getLength, placeShipRandom };
 }

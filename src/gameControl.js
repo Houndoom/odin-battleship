@@ -10,15 +10,15 @@ const gameControl = (() => {
   const gameboardSelectors = ['.left .gameboard', '.right .gameboard']
   const players = [Player('Player 1'), Player('Computer')];
 
-  gameboards[0].placeShip(3, 1, 5, 'v');
-  gameboards[0].placeShip(1, 0, 3, 'h');
-  gameboards[0].placeShip(0, 5, 2, 'h');
-  gameboards[0].placeShip(6, 6, 4, 'h');
+  gameboards[0].placeShipRandom(5);
+  gameboards[0].placeShipRandom(4);
+  gameboards[0].placeShipRandom(3);
+  gameboards[0].placeShipRandom(2);
 
-  gameboards[1].placeShip(3, 3, 5, 'v');
-  gameboards[1].placeShip(1, 1, 3, 'h');
-  gameboards[1].placeShip(0, 7, 2, 'h');
-  gameboards[1].placeShip(6, 6, 4, 'v');
+  gameboards[1].placeShipRandom(5);
+  gameboards[1].placeShipRandom(4);
+  gameboards[1].placeShipRandom(3);
+  gameboards[1].placeShipRandom(2);
 
   let _currPlayer = 0;
 
