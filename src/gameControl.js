@@ -22,6 +22,25 @@ const gameControl = (() => {
 
   let currPlayer = 0;
 
+  const _randomAttack = () => {
+    const enemyPlayer = (currPlayer + 1) % 2;
+    const len = gameboards[enemyPlayer].getLength();
+    let attackResult = -2;
+    let x;
+    let y;
+    while (attackResult === -2) {
+      x = Math.floor(Math.random()*len);
+      y = Math.floor(Math.random()*len);
+      attackResult = gameboards[enemyPlayer].receiveAttack(x, y);
+    }
+    if (attackResult === -1) {
+      displayControl.attack(gameboardSelectors[enemyPlayer], y*len + x);
+    } else if (attackResult >= 0) {
+      displayControl.attack(gameboardSelectors[enemyPlayer], y*len + x, true);
+    }
+    changeTurn();
+  }
+
   const _attack = function() {
     const id = this.getAttribute('data-id').substring(6);
     const enemyPlayer = (currPlayer + 1) % 2;
@@ -29,22 +48,27 @@ const gameControl = (() => {
     const x = id % len;
     const y = (id - x) / len;
     let attackResult = gameboards[enemyPlayer].receiveAttack(x, y);
-    if (attackResult == -1) {
+    if (attackResult === -1) {
       displayControl.attack(gameboardSelectors[enemyPlayer], id);
     } else if (attackResult >= 0) {
       displayControl.attack(gameboardSelectors[enemyPlayer], id, true);
     }
+    if (attackResult !== -2) changeTurn();
   }
 
-  const testfunc = function() {
-    displayControl.toggleBoard(gameboardSelectors[1], _attack);
+  // Does setup for player and computer turn
+  const turnSetup = function() {
+    if (currPlayer === 0) displayControl.toggleBoard(gameboardSelectors[1], _attack); // Player turn: add attack click events
+    else { // Computer turn: remove attack click events and computer randomly attacks after one second
+      displayControl.toggleBoard(gameboardSelectors[1], _attack, true) 
+      setTimeout(_randomAttack, 1000);
+    }
   }
 
   const changeTurn = function() {
-    if (currPlayer === 0) displayControl.toggleBoard(gameboardSelectors[1], _attack, true);
-    else displayControl.toggleBoard(gameboardSelectors[1], _attack);
     currPlayer = (currPlayer + 1) % 2;
+    turnSetup();
   }
 
-  return { testfunc };
+  return { turnSetup };
 })();
