@@ -12,7 +12,7 @@ const Gameboard = (len) => {
 
   const getLength = () => len;
   
-  const placeShip = (x, y, shipLen, dir) => {
+  const placeShip = function (x, y, shipLen, dir) {
     if (dir === 'h') {
       if (x <= len - shipLen) {
         for (let i = x; i < x + shipLen; i++) {
@@ -40,7 +40,7 @@ const Gameboard = (len) => {
     return false;
   }
 
-  const receiveAttack = (x, y) => {
+  const receiveAttack = function(x, y) {
     // There cannot be a ship with number >= _boardSize, so can use numbers >= _boardSize to identify hit squares
     if (_board[x][y] === undefined) { // Unhit empty square
       _board[x][y] = _boardSize;
@@ -53,7 +53,7 @@ const Gameboard = (len) => {
     } else return -2; // Square already hit
   }
 
-  const allSunk = () => {
+  const allSunk = function() {
     if (!_ships) return false;
     return _ships.reduce((a, b) => a && b.isSunk(), true);
   }
