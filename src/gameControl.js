@@ -20,10 +20,10 @@ const gameControl = (() => {
   gameboards[1].placeShip(0, 7, 2, 'h');
   gameboards[1].placeShip(6, 6, 4, 'v');
 
-  let currPlayer = 0;
+  let _currPlayer = 0;
 
   const _randomAttack = () => {
-    const enemyPlayer = (currPlayer + 1) % 2;
+    const enemyPlayer = (_currPlayer + 1) % 2;
     const len = gameboards[enemyPlayer].getLength();
     let attackResult = -2;
     let x;
@@ -34,31 +34,37 @@ const gameControl = (() => {
       attackResult = gameboards[enemyPlayer].receiveAttack(x, y);
     }
     if (attackResult === -1) {
-      displayControl.attack(gameboardSelectors[enemyPlayer], y*len + x);
-    } else if (attackResult >= 0) {
-      displayControl.attack(gameboardSelectors[enemyPlayer], y*len + x, true);
+      displayControl.attack(players[_currPlayer].getName(), gameboardSelectors[enemyPlayer], y*len + x);
+    } else if (attackResult === 0) {
+      displayControl.attack(players[_currPlayer].getName(), gameboardSelectors[enemyPlayer], y*len + x, true);
+    } else if (attackResult === 1) {
+      displayControl.attack(players[_currPlayer].getName(), gameboardSelectors[enemyPlayer], y*len + x, true, true);
     }
-    changeTurn();
+    if (gameboards[enemyPlayer].allSunk()) _win();
+    else changeTurn();
   }
 
   const _attack = function() {
     const id = this.getAttribute('data-id').substring(6);
-    const enemyPlayer = (currPlayer + 1) % 2;
+    const enemyPlayer = (_currPlayer + 1) % 2;
     const len = gameboards[enemyPlayer].getLength();
     const x = id % len;
     const y = (id - x) / len;
     let attackResult = gameboards[enemyPlayer].receiveAttack(x, y);
     if (attackResult === -1) {
-      displayControl.attack(gameboardSelectors[enemyPlayer], id);
-    } else if (attackResult >= 0) {
-      displayControl.attack(gameboardSelectors[enemyPlayer], id, true);
+      displayControl.attack(players[_currPlayer].getName(), gameboardSelectors[enemyPlayer], id);
+    } else if (attackResult === 0) {
+      displayControl.attack(players[_currPlayer].getName(), gameboardSelectors[enemyPlayer], id, true);
+    } else if (attackResult === 1 ) {
+      displayControl.attack(players[_currPlayer].getName(), gameboardSelectors[enemyPlayer], id, true, true);
     }
-    if (attackResult !== -2) changeTurn();
+    if (gameboards[enemyPlayer].allSunk()) _win();
+    else if (attackResult !== -2) changeTurn();
   }
 
   // Does setup for player and computer turn
   const turnSetup = function() {
-    if (currPlayer === 0) displayControl.toggleBoard(gameboardSelectors[1], _attack); // Player turn: add attack click events
+    if (_currPlayer === 0) displayControl.toggleBoard(gameboardSelectors[1], _attack); // Player turn: add attack click events
     else { // Computer turn: remove attack click events and computer randomly attacks after one second
       displayControl.toggleBoard(gameboardSelectors[1], _attack, true) 
       setTimeout(_randomAttack, 1000);
@@ -66,8 +72,13 @@ const gameControl = (() => {
   }
 
   const changeTurn = function() {
-    currPlayer = (currPlayer + 1) % 2;
+    _currPlayer = (_currPlayer + 1) % 2;
     turnSetup();
+  }
+
+  const _win = function() {
+    displayControl.toggleBoard(gameboardSelectors[1], _attack, true);
+    displayControl.win(players[_currPlayer].getName());
   }
 
   return { turnSetup };

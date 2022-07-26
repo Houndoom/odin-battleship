@@ -7,6 +7,8 @@ const Ship = (length) => {
 
   const hit = () => {
     _hitCount++;
+    if (isSunk()) return 1;
+    else return 0;
   }
   
   const isSunk = () => {

@@ -12,7 +12,7 @@ const Gameboard = (len) => {
 
   const getLength = () => len;
   
-  const placeShip = function (x, y, shipLen, dir) {
+  const placeShip = function(x, y, shipLen, dir) {
     if (dir === 'h') {
       if (x <= len - shipLen) {
         for (let i = x; i < x + shipLen; i++) {
@@ -47,9 +47,8 @@ const Gameboard = (len) => {
       return -1;
     } else if (_board[x][y] < _boardSize) { // Unhit ship square
       const shipNo = _board[x][y];
-      _ships[shipNo].hit();
       _board[x][y] += _boardSize;
-      return shipNo;
+      return _ships[shipNo].hit(); // 0 if hit ship not sunk, 1 if ship sunk
     } else return -2; // Square already hit
   }
 

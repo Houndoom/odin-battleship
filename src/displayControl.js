@@ -8,6 +8,10 @@ const displayControl = (() => {
     return div;
   }
 
+  const _setGameMessage = function(text) {
+    document.querySelector('.game-message').textContent = text;
+  }
+
   const basicSetup = function() {
     const header = div('header');
     header.textContent = 'Battleship';
@@ -27,7 +31,6 @@ const displayControl = (() => {
     const game = div('game');
 
     const gameMessage = div('game-message');
-    gameMessage.textContent = 'You hit a ship!' //
 
     const gameDisplay = div('game-display');
 
@@ -67,13 +70,15 @@ const displayControl = (() => {
     return newGameboard;
   }
 
-  const attack = function(boardSelector, i, hit = false) {
+  const attack = function(playerName, boardSelector, i, hit = false, sunk = false) {
     const board = document.querySelector(boardSelector);
     const square = board.querySelector(`[data-id = 'square${i}']`)
     square.classList.add('attacked');
     if (hit) {
       square.classList.add('hit');
-    }
+      if (sunk) _setGameMessage(`${playerName} sinks a ship!`);
+      else _setGameMessage(`${playerName} hits a ship!`);
+    } else  _setGameMessage(`${playerName} misses!`);
   }
 
   // Toggle whether board has event listeners
@@ -87,7 +92,11 @@ const displayControl = (() => {
     else squares.forEach(e => e.removeEventListener('click', func));
   }
 
-  return { basicSetup , gameSetup, attack, toggleBoard };
+  const win = function(playerName) {
+    _setGameMessage(`${playerName} wins!`);
+  }
+
+  return { basicSetup , gameSetup, attack, toggleBoard, win };
 
 })();
 
