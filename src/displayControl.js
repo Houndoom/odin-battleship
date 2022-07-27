@@ -27,6 +27,11 @@ const displayControl = (() => {
     body.appendChild(footer);
   }
 
+  const clearMain = function() {
+    const mainNode = document.querySelector('main').firstElementChild;
+    mainNode.remove();
+  }
+
   // Start screen to ask for name
   const startSetup = function() {
     const start = div('start');
@@ -55,22 +60,27 @@ const displayControl = (() => {
     document.querySelector('main').appendChild(start);
   }
 
-  const gameSetup = function(len) {
+  const gameSetup = function(len, leftName, rightName) {
     const game = div('game');
 
     const gameMessage = div('game-message');
+    gameMessage.textContent = 'Start attacking!';
 
     const gameDisplay = div('game-display');
 
-    const playerSpaceLeft = div('player-space','left');
+    const playerSpaceLeft = div('player-space', 'left');
     const turnDisplay = div('turn-display');
     const playerSpaceRight = div('player-space', 'right');
 
-    [playerSpaceLeft, playerSpaceRight].forEach(e => {
-      const playerName = div('player-name');
-      e.appendChild(playerName);
-      e.appendChild(_createGameboard(len))
-    });
+    const playerNameLeft = div('player-name');
+    playerNameLeft.textContent = leftName;
+    playerSpaceLeft.appendChild(playerNameLeft);
+    playerSpaceLeft.appendChild(_createGameboard(len));
+
+    const playerNameRight = div('player-name');
+    playerNameRight.textContent = rightName;
+    playerSpaceRight.appendChild(playerNameRight);
+    playerSpaceRight.appendChild(_createGameboard(len));
 
     gameDisplay.appendChild(playerSpaceLeft);
     gameDisplay.appendChild(turnDisplay);
@@ -101,13 +111,13 @@ const displayControl = (() => {
       newGameboard.appendChild(square);
     }
 
-    const img = document.createElement('img');
-    img.src = "ship3h.svg";
-    img.classList.add('rotate');
-    img.style.gridColumnStart = '1';
-    img.style.gridRowStart = '1';
-    img.style.zIndex = '-1';
-    newGameboard.appendChild(img);
+    // const img = document.createElement('img');
+    // img.src = "ship3h.svg";
+    // img.classList.add('rotate');
+    // img.style.gridColumnStart = '1';
+    // img.style.gridRowStart = '1';
+    // img.style.zIndex = '-1';
+    // newGameboard.appendChild(img);
 
     return newGameboard;
   }
@@ -138,7 +148,7 @@ const displayControl = (() => {
     _setGameMessage(`${playerName} wins!`);
   }
 
-  return { basicSetup, startSetup, gameSetup, attack, toggleBoard, win };
+  return { basicSetup, startSetup, gameSetup, attack, toggleBoard, win, clearMain };
 
 })();
 

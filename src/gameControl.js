@@ -8,7 +8,11 @@ const gameControl = (() => {
 
   const gameboards = [Gameboard(10), Gameboard(10)];
   const gameboardSelectors = ['.left .gameboard', '.right .gameboard']
-  const players = [Player('Player 1'), Player('Computer')];
+  let players;
+
+  const createPlayers = (name1, name2) => {
+    players = [Player(name1), Player(name2)];
+  }
 
   gameboards[0].placeShipRandom(5);
   gameboards[0].placeShipRandom(4);
@@ -41,7 +45,7 @@ const gameControl = (() => {
       displayControl.attack(players[_currPlayer].getName(), gameboardSelectors[enemyPlayer], y*len + x, true, true);
     }
     if (gameboards[enemyPlayer].allSunk()) _win();
-    else changeTurn();
+    else _changeTurn();
   }
 
   const _attack = function() {
@@ -59,7 +63,7 @@ const gameControl = (() => {
       displayControl.attack(players[_currPlayer].getName(), gameboardSelectors[enemyPlayer], id, true, true);
     }
     if (gameboards[enemyPlayer].allSunk()) _win();
-    else if (attackResult !== -2) changeTurn();
+    else if (attackResult !== -2) _changeTurn();
   }
 
   // Does setup for player and computer turn
@@ -71,7 +75,7 @@ const gameControl = (() => {
     }
   }
 
-  const changeTurn = function() {
+  const _changeTurn = function() {
     _currPlayer = (_currPlayer + 1) % 2;
     turnSetup();
   }
@@ -81,5 +85,5 @@ const gameControl = (() => {
     displayControl.win(players[_currPlayer].getName());
   }
 
-  return { turnSetup };
+  return { turnSetup, createPlayers };
 })();
