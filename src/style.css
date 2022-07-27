@@ -109,13 +109,25 @@ button:hover {
 
 .choose-ship {
   display: grid;
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: 40px repeat(3, 160px);
+  grid-template-columns: repeat(2, 160px);
   height: 100%;
   place-items: center;
 }
 
-.choose-ship img {
+.choose-ship button {
+  grid-column: 1 / -1;
+  font-size: 1rem;
+  height: 30px;
+  width: 150px;
+}
+
+.choose-ship [data-dir = 'h'] {
   height: 32px;
+}
+
+.choose-ship [data-dir = 'v'] {
+  width: 32px;
 }
 
 /* Game */

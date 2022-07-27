@@ -1,5 +1,7 @@
 export { displayControl };
 
+// Import all images with their filenames as keys using Webpack's require.context
+
 function importAll(r) {
   let images = {};
   r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
@@ -10,6 +12,7 @@ const images = importAll(require.context('./img/', false, /\.(png|jpe?g|svg)$/))
 
 const displayControl = (() => {
 
+  // Utility function to create divs with classes
   const div = function(...className) {
     const div = document.createElement('div');
     div.classList.add(...className);
@@ -20,6 +23,7 @@ const displayControl = (() => {
     document.querySelector('.game-message').textContent = text;
   }
 
+  // Set up skeleton of site, i.e header, footer, and main element
   const basicSetup = function() {
     const header = div('header');
     header.textContent = 'Battleship';
@@ -35,6 +39,7 @@ const displayControl = (() => {
     body.appendChild(footer);
   }
 
+  // Clear main element, for transitioning game states
   const clearMain = function() {
     const mainNode = document.querySelector('main').firstElementChild;
     if (mainNode) mainNode.remove();
@@ -68,16 +73,39 @@ const displayControl = (() => {
     document.querySelector('main').appendChild(start);
   }
 
-  const placeShipSetup = function() {
+  // Screen to place ships
+  const placeShipSetup = function(ships) {
     const placeShip = div('place-ship');
     const gameMessage = div('game-message');
     gameMessage.textContent = 'Drag and drop your ships to place them on your board';
     const chooseShip = div('choose-ship');
+
+    const toggleDir = document.createElement('button');
+    toggleDir.textContent = 'Toggle Direction';
+
+    // Allow players to toggle ships horizontally/vertically to place them
+    toggleDir.addEventListener('click', toggleDirection);
+
+    function toggleDirection() {
+      const allShips = document.querySelectorAll('img[draggable=true]'); // Don't toggle those that are already placed (non-draggable)
+      allShips.forEach(s => {
+        const shipDir = s.getAttribute('data-dir');
+        const newShipDir = (shipDir === 'h') ? 'v' : 'h';
+        const shipLen = parseInt(s.getAttribute('data-len'));
+        s.src = images[`ship${shipLen}${newShipDir}.svg`]; // Replace image with toggled direction
+        s.setAttribute('data-dir', newShipDir);
+      })
+    }
+
+    chooseShip.appendChild(toggleDir);
     
-    for (let i = 2; i <= 5; i++) {
+    // Place all ship images
+    for (let i = 0; i < ships.length; i++) {
       const ship = document.createElement('img');
-      ship.src = images[`ship${i}h.svg`];
+      ship.src = images[`ship${ships[i]}h.svg`];
       ship.id = `ship${i}`;
+      ship.setAttribute('data-len', ships[i]);
+      ship.setAttribute('data-dir', 'h');
       ship.draggable = true;
       chooseShip.appendChild(ship);
     }
@@ -89,11 +117,17 @@ const displayControl = (() => {
     document.querySelector('main').appendChild(placeShip);
   }
 
+  // Check whether all ships have been placed
+  const allShipsPlaced = function() {
+    return document.querySelectorAll('img[data-len]:not(.hide)').length === 0;
+  }
+
+  // Screen for actual game
   const gameSetup = function(len, leftName, rightName) {
     const game = div('game');
 
     const gameMessage = div('game-message');
-    gameMessage.textContent = 'Start attacking!';
+    gameMessage.textContent = 'Start attacking!'; // Initial game message
 
     const gameDisplay = div('game-display');
 
@@ -122,6 +156,7 @@ const displayControl = (() => {
 
   }
 
+  // Create DOM gameboard
   const _createGameboard = function(len) {
     const root = document.documentElement;
     root.style.setProperty('--board-length', len);
@@ -135,7 +170,7 @@ const displayControl = (() => {
       const y = (i - x) / len;
       square.setAttribute('data-x', `x${x}`);
       square.setAttribute('data-y', `y${y}`);
-      square.style.gridColumn = `${x + 1} / span 1`;
+      square.style.gridColumn = `${x + 1} / span 1`; // Fix grid positions so that ship images can be overlapped with squares
       square.style.gridRow = `${y + 1} / span 1`;
       newGameboard.appendChild(square);
     }
@@ -143,6 +178,7 @@ const displayControl = (() => {
     return newGameboard;
   }
 
+  // Insert ship image onto gameboard. Images overlap with squares as they all have gridColumn and gridRow specified
   const insertShip = function(gameboardSelector, x, y, len, dir) {
     const img = document.createElement('img');
     img.src = images[`ship${len}${dir}.svg`];
@@ -153,10 +189,11 @@ const displayControl = (() => {
       img.style.gridColumn = `${x + 1}`;
       img.style.gridRow = `${y + 1} / span ${len}`;  
     }
-    img.style.zIndex = '-1';
+    img.style.zIndex = '-1'; // Set ship images to be behind board
     document.querySelector(gameboardSelector).appendChild(img);
   }
 
+  // Add relevant classes to attacked squares and set game message accordingly
   const attack = function(playerName, boardSelector, i, hit = false, sunk = false) {
     const board = document.querySelector(boardSelector);
     const square = board.querySelector(`[data-id = 's${i}']`)
@@ -175,14 +212,15 @@ const displayControl = (() => {
 
     if (!disable) squares.forEach(e => {
       e.addEventListener('click', func)
-      e.classList.add('active-board');
+      e.classList.add('active-board'); // Add hover effect if event listeners are active
     });
-    else squares.forEach(e => {
+    else squares.forEach(e => { // Remove event listeners if disable = true
       e.removeEventListener('click', func);
       e.classList.remove('active-board')
     });
   }
 
+  // Add play again button and set appropriate message when someone wins
   const win = function(playerName) {
     _setGameMessage(`${playerName} wins!`);
 
@@ -191,6 +229,6 @@ const displayControl = (() => {
     document.querySelector('.midsection').append(restart);
   }
 
-  return { basicSetup, startSetup, placeShipSetup, gameSetup, attack, toggleBoard, win, clearMain, insertShip };
+  return { basicSetup, startSetup, placeShipSetup, gameSetup, attack, toggleBoard, win, clearMain, insertShip, allShipsPlaced };
 
 })();
