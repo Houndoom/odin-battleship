@@ -37,7 +37,7 @@ const displayControl = (() => {
 
   const clearMain = function() {
     const mainNode = document.querySelector('main').firstElementChild;
-    mainNode.remove();
+    if (mainNode) mainNode.remove();
   }
 
   // Start screen to ask for name
@@ -77,7 +77,7 @@ const displayControl = (() => {
     const gameDisplay = div('game-display');
 
     const playerSpaceLeft = div('player-space', 'left');
-    const turnDisplay = div('turn-display');
+    const midsection = div('midsection');
     const playerSpaceRight = div('player-space', 'right');
 
     const playerNameLeft = div('player-name');
@@ -91,7 +91,7 @@ const displayControl = (() => {
     playerSpaceRight.appendChild(_createGameboard(len));
 
     gameDisplay.appendChild(playerSpaceLeft);
-    gameDisplay.appendChild(turnDisplay);
+    gameDisplay.appendChild(midsection);
     gameDisplay.appendChild(playerSpaceRight);
 
     game.appendChild(gameMessage);
@@ -164,6 +164,10 @@ const displayControl = (() => {
 
   const win = function(playerName) {
     _setGameMessage(`${playerName} wins!`);
+
+    const restart = document.createElement('button');
+    restart.textContent = 'Play Again';
+    document.querySelector('.midsection').append(restart);
   }
 
   return { basicSetup, startSetup, gameSetup, attack, toggleBoard, win, clearMain, insertShip };

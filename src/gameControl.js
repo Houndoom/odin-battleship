@@ -6,7 +6,7 @@ export { gameControl };
 
 const gameControl = (() => {
 
-  const gameboards = [Gameboard(10), Gameboard(10)];
+  let gameboards;
   const gameboardSelectors = ['.left .gameboard', '.right .gameboard']
   let players;
 
@@ -14,19 +14,10 @@ const gameControl = (() => {
     players = [Player(name1), Player(name2)];
   }
 
-  for (let shipLen of [5, 4, 3, 2]) {
-    gameboards[0].placeShipRandom(shipLen);
-  }
-
   const insertAllShips = function(gameboard) {
     if (gameboard === 'left') gameboards[0].getShipPositions().forEach(params => displayControl.insertShip(gameboardSelectors[0],...params));
     else gameboards[1].getShipPositions().forEach(params => displayControl.insertShip(gameboardSelectors[1],...params));
   }
-
-  gameboards[1].placeShipRandom(5);
-  gameboards[1].placeShipRandom(4);
-  gameboards[1].placeShipRandom(3);
-  gameboards[1].placeShipRandom(2);
 
   let _currPlayer = 0;
 
@@ -76,7 +67,7 @@ const gameControl = (() => {
     if (_currPlayer === 0) displayControl.toggleBoard(gameboardSelectors[1], _attack); // Player turn: add attack click events
     else { // Computer turn: remove attack click events and computer randomly attacks after one second
       displayControl.toggleBoard(gameboardSelectors[1], _attack, true) 
-      setTimeout(_randomAttack, 2000);
+      setTimeout(_randomAttack, 1000);
     }
   }
 
@@ -88,7 +79,47 @@ const gameControl = (() => {
   const _win = function() {
     displayControl.toggleBoard(gameboardSelectors[1], _attack, true);
     displayControl.win(players[_currPlayer].getName());
+    document.querySelector('.midsection button').addEventListener("click", _startGame);
   }
 
-  return { turnSetup, createPlayers, insertAllShips };
+  const startSetup = function() {
+    displayControl.clearMain();
+    displayControl.startSetup();
+
+    /* Get name and start game */
+
+    document.querySelector('.start button').addEventListener('click', enter);
+
+    // Make it work on Enter key
+    document.querySelector('.start input').addEventListener("keydown", e => {
+      if (e.key === "Enter") enter();
+    });
+
+    function enter() {
+      const nameInput = document.getElementById('name-input');
+      if (nameInput.checkValidity()) {
+        createPlayers(nameInput.value, 'Computer');
+        _startGame();
+      } else {
+        nameInput.setCustomValidity('Please enter a name.');
+        nameInput.reportValidity();
+      }
+    }
+  }
+
+  const _startGame = function() {
+    const boardLen = 10;
+    displayControl.clearMain();
+    gameboards = [Gameboard(boardLen), Gameboard(boardLen)];
+    displayControl.gameSetup(boardLen, players[0].getName(), players[1].getName());
+
+    for (let shipLen of [5, 4, 3, 2]) {
+      gameboards[0].placeShipRandom(shipLen);
+      gameboards[1].placeShipRandom(shipLen);
+    }
+    insertAllShips('left');
+    turnSetup();
+  }
+  
+  return { startSetup };
 })();
