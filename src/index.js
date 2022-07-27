@@ -19,6 +19,7 @@ function enter() {
     gameControl.createPlayers(nameInput.value, 'Computer');
     displayControl.clearMain();
     displayControl.gameSetup(10, nameInput.value, 'Computer');
+    gameControl.insertAllShips('left');
     gameControl.turnSetup();
   } else {
     nameInput.setCustomValidity('Please enter a name.');

@@ -109,7 +109,7 @@ main {
 }
 
 .game-message {
-  font-size: 1rem;
+  font-size: 1.5rem;
 }
 
 .player-name {
@@ -135,6 +135,11 @@ main {
 .square {
   border: 1px solid black;
   margin: -1px 0px 0px -1px;
+}
+
+.square.active-board:hover:not(.attacked) {
+  background-color: green;
+  opacity: 0.5;
 }
 
 .square.attacked.hit {

@@ -1,5 +1,13 @@
 export { displayControl };
 
+function importAll(r) {
+  let images = {};
+  r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+  return images;
+}
+
+const images = importAll(require.context('./img/', false, /\.(png|jpe?g|svg)$/));
+
 const displayControl = (() => {
 
   const div = function(...className) {
@@ -111,15 +119,21 @@ const displayControl = (() => {
       newGameboard.appendChild(square);
     }
 
-    // const img = document.createElement('img');
-    // img.src = "ship3h.svg";
-    // img.classList.add('rotate');
-    // img.style.gridColumnStart = '1';
-    // img.style.gridRowStart = '1';
-    // img.style.zIndex = '-1';
-    // newGameboard.appendChild(img);
-
     return newGameboard;
+  }
+
+  const insertShip = function(gameboardSelector, x, y, len, dir) {
+    const img = document.createElement('img');
+    img.src = images[`ship${len}${dir}.svg`];
+    if (dir === 'h') {
+      img.style.gridColumn = `${x + 1} / span ${len}`;
+      img.style.gridRow = `${y + 1}`;
+    } else {
+      img.style.gridColumn = `${x + 1}`;
+      img.style.gridRow = `${y + 1} / span ${len}`;  
+    }
+    img.style.zIndex = '-1';
+    document.querySelector(gameboardSelector).appendChild(img);
   }
 
   const attack = function(playerName, boardSelector, i, hit = false, sunk = false) {
@@ -140,15 +154,18 @@ const displayControl = (() => {
 
     if (!disable) squares.forEach(e => {
       e.addEventListener('click', func)
+      e.classList.add('active-board');
     });
-    else squares.forEach(e => e.removeEventListener('click', func));
+    else squares.forEach(e => {
+      e.removeEventListener('click', func);
+      e.classList.remove('active-board')
+    });
   }
 
   const win = function(playerName) {
     _setGameMessage(`${playerName} wins!`);
   }
 
-  return { basicSetup, startSetup, gameSetup, attack, toggleBoard, win, clearMain };
+  return { basicSetup, startSetup, gameSetup, attack, toggleBoard, win, clearMain, insertShip };
 
 })();
-

@@ -4,6 +4,7 @@ export { Gameboard };
 const Gameboard = (len) => {
   let _board = new Array(len);
   let _ships = [];
+  let _shipPositions = [];
   const _boardSize = len*len; 
 
   for (let i = 0; i < len; i++) {
@@ -39,6 +40,7 @@ const Gameboard = (len) => {
           if (_board[i][y] >= 0) return false;
         }
         _ships.push(Ship(shipLen));
+        _shipPositions.push([x, y, shipLen, dir]);
         for (let i = x; i < x + shipLen; i++) {
           _board[i][y] = _ships.length - 1;
         }
@@ -51,6 +53,7 @@ const Gameboard = (len) => {
           if (_board[x][i] >= 0) return false;
         }
         _ships.push(Ship(shipLen));
+        _shipPositions.push([x, y, shipLen, dir]);
         for (let i = y; i < y + shipLen; i++) {
           _board[x][i] = _ships.length - 1;
         }
@@ -68,7 +71,9 @@ const Gameboard = (len) => {
     } else if (_board[x][y] < _boardSize) { // Unhit ship square
       const shipNo = _board[x][y];
       _board[x][y] += _boardSize;
-      return _ships[shipNo].hit(); // 0 if hit ship not sunk, 1 if ship sunk
+      if (_ships[shipNo].hit()) {
+        return _shipPositions[shipNo];
+      } else return 0; // 0 if hit ship not sunk, ship positions if ship sunk
     } else return -2; // Square already hit
   }
 
@@ -77,5 +82,7 @@ const Gameboard = (len) => {
     return _ships.reduce((a, b) => a && b.isSunk(), true);
   }
 
-  return { placeShip, receiveAttack, allSunk, getLength, placeShipRandom };
+  const getShipPositions = () => _shipPositions;
+
+  return { placeShip, receiveAttack, allSunk, getLength, placeShipRandom, getShipPositions };
 }
