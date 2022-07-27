@@ -68,6 +68,27 @@ const displayControl = (() => {
     document.querySelector('main').appendChild(start);
   }
 
+  const placeShipSetup = function() {
+    const placeShip = div('place-ship');
+    const gameMessage = div('game-message');
+    gameMessage.textContent = 'Drag and drop your ships to place them on your board';
+    const chooseShip = div('choose-ship');
+    
+    for (let i = 2; i <= 5; i++) {
+      const ship = document.createElement('img');
+      ship.src = images[`ship${i}h.svg`];
+      ship.id = `ship${i}`;
+      ship.draggable = true;
+      chooseShip.appendChild(ship);
+    }
+
+    placeShip.appendChild(gameMessage);
+    placeShip.appendChild(chooseShip);
+    placeShip.appendChild(_createGameboard(10));
+
+    document.querySelector('main').appendChild(placeShip);
+  }
+
   const gameSetup = function(len, leftName, rightName) {
     const game = div('game');
 
@@ -170,6 +191,6 @@ const displayControl = (() => {
     document.querySelector('.midsection').append(restart);
   }
 
-  return { basicSetup, startSetup, gameSetup, attack, toggleBoard, win, clearMain, insertShip };
+  return { basicSetup, startSetup, placeShipSetup, gameSetup, attack, toggleBoard, win, clearMain, insertShip };
 
 })();

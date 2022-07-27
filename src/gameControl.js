@@ -9,6 +9,7 @@ const gameControl = (() => {
   let gameboards;
   const gameboardSelectors = ['.left .gameboard', '.right .gameboard']
   let players;
+  const boardLen = 10;
 
   const createPlayers = function(name1, name2) {
     players = [Player(name1), Player(name2)];
@@ -107,8 +108,61 @@ const gameControl = (() => {
     }
   }
 
+  const placeShipSetup = function() {
+    displayControl.placeShipSetup();
+    gameboards = [Gameboard(boardLen), Gameboard(boardLen)];
+    const squares = document.querySelectorAll('.square');
+
+    squares.forEach(s => {
+      s.addEventListener('dragenter', dragEnter);
+      s.addEventListener('dragover', dragOver);
+      s.addEventListener('dragleave', dragLeave);
+      s.addEventListener('drop', drop);
+    })
+
+    const ships = document.querySelectorAll('img');
+
+    ships.forEach(s => s.addEventListener('dragstart', dragStart));
+
+    function dragStart(e) {
+      e.dataTransfer.setData("text/plain", e.target.id);
+    }
+
+    function dragEnter(e) {
+      e.preventDefault();
+      e.target.classList.add('drag-over');
+    }
+
+    function dragOver(e) {
+      e.preventDefault();
+      e.target.classList.add('drag-over');
+    }
+
+    function dragLeave(e) {
+      e.target.classList.remove('drag-over');
+    }
+
+    function drop(e) {
+      e.preventDefault();
+      const x = parseInt(e.target.getAttribute('data-x').substring(1));
+      const y = parseInt(e.target.getAttribute('data-y').substring(1));
+      let dir = 'h';
+      
+      const id = e.dataTransfer.getData('text/plain');
+      const shipLen = parseInt(id.substring(4));
+      const draggable = document.getElementById(id);
+
+      e.target.classList.remove('drag-over');
+      if (((dir === 'h') && (x <= boardLen - shipLen)) || ((dir === 'v') && (y <= boardLen - shipLen))) {
+        if (gameboards[0].placeShip(x, y, shipLen, dir)) {
+          displayControl.insertShip('.gameboard', x, y, shipLen, dir);
+          draggable.classList.add('hide');
+        }
+      }
+    }
+  }
+
   const _startGame = function() {
-    const boardLen = 10;
     displayControl.clearMain();
     gameboards = [Gameboard(boardLen), Gameboard(boardLen)];
     displayControl.gameSetup(boardLen, players[0].getName(), players[1].getName());
@@ -121,5 +175,5 @@ const gameControl = (() => {
     turnSetup();
   }
   
-  return { startSetup };
+  return { startSetup, placeShipSetup };
 })();

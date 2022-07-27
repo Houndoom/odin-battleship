@@ -46,7 +46,8 @@ body {
 
 main {
   display: grid;
-  place-items: center;  
+  place-items: center;
+  font-family: 'Electrolize', sans-serif;  
 }
 
 /* Start */
@@ -93,13 +94,36 @@ button:hover {
   outline: 1.5px solid black;
 }
 
+/* Place Ship */
+
+.place-ship {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  place-items: center;
+}
+
+.place-ship .game-message {
+  grid-column: 1 / -1;
+}
+
+.choose-ship {
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  height: 100%;
+  place-items: center;
+}
+
+.choose-ship img {
+  height: 32px;
+}
+
 /* Game */
 
 .game {
   display: grid;
   grid-template-rows: auto 1fr;
   width: 100%;
-  font-family: 'Electrolize', sans-serif;
 }
 
 .game-display {
@@ -110,6 +134,7 @@ button:hover {
 
 .game-message {
   font-size: 1.5rem;
+  margin-bottom: 50px;
 }
 
 .player-name {
@@ -137,7 +162,7 @@ button:hover {
   margin: -1px 0px 0px -1px;
 }
 
-.square.active-board:hover:not(.attacked) {
+.square.active-board:hover:not(.attacked), .square.drag-over{
   background-color: green;
   opacity: 0.5;
 }
@@ -160,4 +185,8 @@ button:hover {
 
 .rotate {
   transform: rotate(90deg);
+}
+
+.hide {
+  display: none;
 }
