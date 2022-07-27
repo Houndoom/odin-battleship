@@ -59,7 +59,7 @@ main {
   font-family: 'Electrolize', sans-serif;
 }
 
-.start form {
+.start .name-form {
   display: flex;
   align-items: center;
   gap: 5px;

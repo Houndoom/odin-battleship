@@ -4,7 +4,14 @@ import './style.css';
 
 displayControl.startSetup();
 
+/* Get name and start game */
+
 document.querySelector('.start button').addEventListener('click', enter);
+
+// Make it work on Enter key
+document.querySelector('.start input').addEventListener("keydown", e => {
+  if (e.key === "Enter") enter();
+});
 
 function enter() {
   const nameInput = document.getElementById('name-input');
@@ -15,5 +22,7 @@ function enter() {
     gameControl.turnSetup();
   } else {
     nameInput.setCustomValidity('Please enter a name.');
+    nameInput.reportValidity();
   }
 }
+

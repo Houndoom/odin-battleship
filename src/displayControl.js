@@ -37,7 +37,7 @@ const displayControl = (() => {
     const start = div('start');
     
     // Name field
-    const nameForm = document.createElement('form');
+    const nameForm = div('name-form');
     const nameLabel = document.createElement('label');
     nameLabel.setAttribute('for', 'name-input');
     nameLabel.textContent = 'Please enter your player name:';
