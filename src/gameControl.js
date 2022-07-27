@@ -45,7 +45,7 @@ const gameControl = (() => {
   }
 
   const _attack = function() {
-    const id = this.getAttribute('data-id').substring(6);
+    const id = this.getAttribute('data-id').substring(1);
     const enemyPlayer = (_currPlayer + 1) % 2;
     const len = gameboards[enemyPlayer].getLength();
     const x = id % len;

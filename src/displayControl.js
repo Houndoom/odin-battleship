@@ -27,6 +27,34 @@ const displayControl = (() => {
     body.appendChild(footer);
   }
 
+  // Start screen to ask for name
+  const startSetup = function() {
+    const start = div('start');
+    
+    // Name field
+    const nameForm = document.createElement('form');
+    const nameLabel = document.createElement('label');
+    nameLabel.setAttribute('for', 'name-input');
+    nameLabel.textContent = 'Please enter your player name:';
+
+    const nameInput = document.createElement('input');
+    nameInput.id = 'name-input';
+    nameInput.maxLength = '12';
+    nameInput.required = true;
+
+    nameForm.appendChild(nameLabel);
+    nameForm.appendChild(nameInput);
+
+    // Submit button
+    const enterButton = document.createElement('button');
+    enterButton.textContent = 'Enter';
+
+    start.appendChild(nameForm);
+    start.appendChild(enterButton);
+
+    document.querySelector('main').appendChild(start);
+  }
+
   const gameSetup = function(len) {
     const game = div('game');
 
@@ -63,16 +91,30 @@ const displayControl = (() => {
 
     for (let i = 0; i < len * len; i++) {
       const square = div('square');
-      square.setAttribute('data-id', `square${i}`);
+      square.setAttribute('data-id', `s${i}`);
+      const x = i % len;
+      const y = (i - x) / len;
+      square.setAttribute('data-x', `x${x}`);
+      square.setAttribute('data-y', `y${y}`);
+      square.style.gridColumn = `${x + 1} / span 1`;
+      square.style.gridRow = `${y + 1} / span 1`;
       newGameboard.appendChild(square);
     }
+
+    const img = document.createElement('img');
+    img.src = "ship3h.svg";
+    img.classList.add('rotate');
+    img.style.gridColumnStart = '1';
+    img.style.gridRowStart = '1';
+    img.style.zIndex = '-1';
+    newGameboard.appendChild(img);
 
     return newGameboard;
   }
 
   const attack = function(playerName, boardSelector, i, hit = false, sunk = false) {
     const board = document.querySelector(boardSelector);
-    const square = board.querySelector(`[data-id = 'square${i}']`)
+    const square = board.querySelector(`[data-id = 's${i}']`)
     square.classList.add('attacked');
     if (hit) {
       square.classList.add('hit');
@@ -96,8 +138,7 @@ const displayControl = (() => {
     _setGameMessage(`${playerName} wins!`);
   }
 
-  return { basicSetup , gameSetup, attack, toggleBoard, win };
+  return { basicSetup, startSetup, gameSetup, attack, toggleBoard, win };
 
 })();
 
-displayControl.gameSetup(10);
